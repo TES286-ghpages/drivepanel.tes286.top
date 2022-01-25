@@ -1,3 +1,2 @@
-# allow all
-User-agent: *
+User-Agent: *
 Disallow: 
