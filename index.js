@@ -58,7 +58,11 @@ function applyStyleToTagByClass(key, value, classname) {
 }
 
 function addListener(event, secltor, func) {
-    $(secltor).on(event, func);
+    document.addEventListener(event, function(e) {
+        if (e.target.matches(secltor)) {
+            func(e);
+        }
+    });
 }
 
 function join(list, divider, skip_empty) {
@@ -384,7 +388,7 @@ function event_onload(e) {
 function applyEventsListeners() {
     addListener('click', '#login-button', event_login_button);
     addListener('click', '#logout-button', event_logout_button);
-    $('body').attr('onload', 'javascript:event_onload()');
+    addEventListener('load', event_onload);
 }
 
 // 其他的东西
