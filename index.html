@@ -99,7 +99,7 @@
                 <!-- ( 共享 复制链接 下载 删除 重命名 移动到 复制到 ) -->
                 <!-- 多选     show-mutil -->
                 <!-- ( 下载 删除 移动到 复制到 ) -->
-                <button type="button" class="btn btn-default show-defult" id="upload">上传</button>
+                <button type="button" class="btn btn-default show-default" id="upload">上传</button>
                 <button type="button" class="btn btn-default show-alone" id="share">共享</button>
                 <button type="button" class="btn btn-default show-alone" id="copy-link">复制链接</button>
                 <button type="button" class="btn btn-default show-alone show-mutil" id="download">下载</button>
@@ -114,11 +114,9 @@
                     <thead>
                         <tr>
                             <th style="width: 30px;">
-                                <input type="checkbox" id="check-all">
+                                <input type="checkbox" id="check-all" onclick="javascript:event_check_all(this)">
                             </th>
-                            <th style="width: 30px;">
-                                <i class="far fa-list"></i>
-                            </th>
+                            <th style="width: 30px;"></th>
                             <th style="width: auto;">名称</th>
                             <th style="width: 10%;">修改者</th>
                             <th style="width: 10%;">文件大小</th>

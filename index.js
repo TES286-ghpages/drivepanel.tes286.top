@@ -107,6 +107,14 @@ function sha256(str) {
     return forge.sha256.create().update(str).digest().data
 }
 
+function base64urldecode(str) {
+    var pending = str.length % 4;
+    if (pending > 0) {
+        str += new Array(5 - pending).join('=');
+    }
+    return atob(str.replace(/-/g, '+').replace(/_/g, '/'));
+}
+
 function base64urlencode(str) {
     return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/\=+$/, '');
 }
@@ -327,22 +335,44 @@ function getPath(path) {
         var size = file_list[i].size;
         var user = file_list[i].user;
         var time = file_list[i].time;
-        $('#FileTable').append('<tr id="' + encodeURIComponent(id) + '"></tr>');
+        $('#FileTable').append('<tr id="' + base64urlencode(id) + '"></tr>');
         // 选择框
-        $('#' + encodeURIComponent(id)).append('<td><input type="checkbox" id="check" data-file-id="' + encodeURIComponent(id) + '"></td>');
+        $('#' + base64urlencode(id)).append('<td><input type="checkbox" class="check" onclick="event_check(this)" data-file-id="' + base64urlencode(id) + '"></td>');
         // 图标
         if (type == 'file') {
-            $('#' + encodeURIComponent(id)).append('<td><i class="far fa-file"></i></td>');
+            $('#' + base64urlencode(id)).append('<td><i class="far fa-file"></i></td>');
         } else {
-            $('#' + encodeURIComponent(id)).append('<td><i class="far fa-folder"></i></td>');
+            $('#' + base64urlencode(id)).append('<td><i class="far fa-folder"></i></td>');
         }
         // 名称
-        $('#' + encodeURIComponent(id)).append('<td class="item" data-path="' + path + '/' + name + '" data-type="' + type + '">' + name + '</td>');
+        $('#' + base64urlencode(id)).append('<td class="item" data-path="' + path + '/' + name + '" data-type="' + type + '">' + name + '</td>');
         // 修改者
-        $('#' + encodeURIComponent(id)).append('<td>' + user + '</td>');
+        $('#' + base64urlencode(id)).append('<td>' + user + '</td>');
         // 大小
-        $('#' + encodeURIComponent(id)).append('<td>' + size + '</td>');
+        $('#' + base64urlencode(id)).append('<td>' + size + '</td>');
     }
+}
+
+function progress_check() {
+    window.checked_file_list = window.checked_file_list || [];
+    switch (window.checked_file_list.length) {
+        case 0:
+            applyStyleToTagByClass('display', 'none', 'show-mutil');
+            applyStyleToTagByClass('display', 'none', 'show-alone');
+            applyStyleToTagByClass('display', 'block', 'show-default');
+            break;
+        case 1:
+            applyStyleToTagByClass('display', 'none', 'show-mutil');
+            applyStyleToTagByClass('display', 'none', 'show-default');
+            applyStyleToTagByClass('display', 'block', 'show-alone');
+            break;
+        default:
+            applyStyleToTagByClass('display', 'none', 'show-default');
+            applyStyleToTagByClass('display', 'none', 'show-alone');
+            applyStyleToTagByClass('display', 'block', 'show-mutil');
+            break;
+    }
+
 }
 
 // 事件监听函数
@@ -385,9 +415,46 @@ function event_onload(e) {
     }
 }
 
+function event_check(e) {
+    gtag('event', 'check', { checked: e });
+
+    window.checked_file_list = window.checked_file_list || [];
+    // 点击 checkbox 时，把选中的文件加入到 window.checked_file_list
+    // 取消选择, 删除e
+    if (e.checked) {
+        window.checked_file_list.push(e.dataset.fileId);
+    } else {
+        var index = window.checked_file_list.indexOf(e.dataset.fileId);
+        if (index > -1) {
+            window.checked_file_list.splice(index, 1);
+        }
+    }
+    progress_check();
+}
+
+function event_check_all(e) {
+    gtag('event', 'check_all');
+    // 点击 checkbox 时，把选中的文件加入到 window.checked_file_list
+    // 取消选择, 删除e
+    if (e.checked) {
+        window.checked_file_list = [];
+        $('#FileTable').find('input[type="checkbox"]').each(function(index, element) {
+            window.checked_file_list.push(element.dataset.fileId);
+            element.checked = true;
+        });
+    } else {
+        window.checked_file_list = [];
+        $('#FileTable').find('input[type="checkbox"]').each(function(index, element) {
+            element.checked = false;
+        });
+    }
+    progress_check();
+}
+
 function applyEventsListeners() {
     addListener('click', '#login-button', event_login_button);
     addListener('click', '#logout-button', event_logout_button);
+    addListener('click', '#FileTable tr', event_check);
     addEventListener('load', event_onload);
 }
 
@@ -395,7 +462,6 @@ function applyEventsListeners() {
 window.dataLayer = window.dataLayer || [];
 
 function gtag() { dataLayer.push(arguments); }
-window.gtag = gtag;
 gtag('js', new Date());
 gtag('config', 'G-P0D0K5QM78');
 applyEventsListeners();
