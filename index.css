@@ -12,6 +12,22 @@
 **  GNU General Public License for more details.                              **
 ********************************************************************************/
 
-.had-login{
+.no-login {
     display: none;
+}
+
+.had-login {
+    display: none;
+}
+
+.show-alone {
+    display: none;
+}
+
+.show-mutil {
+    display: none;
+}
+
+.show-defult {
+    display: block;
 }

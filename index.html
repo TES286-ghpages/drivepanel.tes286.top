@@ -20,16 +20,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="TES286 Onedrive Online Panel" />
     <title>TES286 Onedrive Online Panel</title>
-    <link rel="shortcut icon" type="image/x-icon"
-        href="https://share.xn--4gq.cn.eu.org/EcgamA_FLhBBuHKY0IXhV2wBEfcq4hsKbr62o_8_B2agTA" />
+    <link rel="shortcut icon" type="image/x-icon" href="https://share.xn--4gq.cn.eu.org/EcgamA_FLhBBuHKY0IXhV2wBEfcq4hsKbr62o_8_B2agTA" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" media="all" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" media="async" />
     <link rel="stylesheet" href="index.css" media="all" />
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0" async="async"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0"></script>
     <!--<script src="https://cdn.jsdelivr.net/npm/jquery.qrcode@1.0.3" async="async"></script>
     <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8" async="async"></script>-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" async="async"></script>
     <script src="https://cdn.jsdelivr.net/npm/node-forge@1.2.1/dist/forge.min.js" async="async"></script>
     <script src="https://hm.baidu.com/hm.js?a763a746dfb5a5a8a830a184931a2e8f" async="async"></script>
+    <script src="https://www.googletagmanager.com/gtag/js?id=G-P0D0K5QM78" async="async"></script>
     <script src="index.js" async="async"></script>
 </head>
 
@@ -71,7 +72,8 @@
                             <button class="btn btn-primary" id="login-button">登录</button>
                         </div>
                         <div class="had-login">
-                            <p style="display: inline;">用户名: </p><div id="username" style="display: inline;">(未知)</div>
+                            <p style="display: inline;">用户名: </p>
+                            <div id="username" style="display: inline;">(未知)</div>
                             <button class="btn btn-danger" id="logout-button">注销</button>
                         </div>
                     </div>
@@ -105,6 +107,27 @@
                 <button type="button" class="btn btn-default show-alone" id="rename">重命名</button>
                 <button type="button" class="btn btn-default show-alone show-mutil" id="move">移动到</button>
                 <button type="button" class="btn btn-default show-alone show-mutil" id="copy">复制到</button>
+            </div>
+            <!-- 文件列表 -->
+            <div id="file-list" class="collapse in table-responsive">
+                <table class="table table-striped table-hover table-condensed">
+                    <thead>
+                        <tr>
+                            <th style="width: 30px;">
+                                <input type="checkbox" id="check-all">
+                            </th>
+                            <th style="width: 30px;">
+                                <i class="far fa-list"></i>
+                            </th>
+                            <th style="width: auto;">名称</th>
+                            <th style="width: 10%;">修改者</th>
+                            <th style="width: 10%;">文件大小</th>
+                        </tr>
+                    </thead>
+                    <tbody id='FileTable'>
+
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
