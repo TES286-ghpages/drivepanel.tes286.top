@@ -14,12 +14,19 @@
 
 var _hmt = _hmt || [];
 var DL_ROOT = "https://1drv.tes286.top/";
+
+window.dataLayer = window.dataLayer || [];
+function gtag() { dataLayer.push(arguments); }
+window.gtag = gtag;
+gtag('js', new Date());
+gtag('config', 'G-P0D0K5QM78');
+
 function load_date() {
     if (location.hash) {
         var hash = location.hash.substring(1);
         // 支持: url=***&path=***
         // 解析
-        var theRequest = new Object();
+        var theRequest = {};
         strs = hash.split("&");
         for (var i = 0; i < strs.length; i++) {
             theRequest[strs[i].split("=")[0]] = decodeURIComponent(strs[i].split("=")[1]);
@@ -78,7 +85,7 @@ function start() {
         hash += "&test=1";
     }
     location.href = location.href.split("#")[0] + "#" + hash;
-
+    gtag('event', 'start', { url: $("#ShareLink").val(), path: $("#Path").val() });
     // 检查链接
     if ($("#ShareLink").val() == "") {
         console.error("ShareLink is empty");
@@ -89,6 +96,7 @@ function start() {
         var urlOBJ = new URL($("#ShareLink").val());
         var url = urlOBJ.origin + urlOBJ.pathname;
     } catch (e) {
+        gtag('event', 'error', { error: "url error" });
         console.error("ShareLink is invalid");
         error("链接无效");
         return;
@@ -161,6 +169,8 @@ function start() {
             $("#ErrorZone").hide();
         },
         error: function (e) {
+            h
+            gtag('event', 'error', { error: "ajax error: " + e.responseText });
             console.error('Request failed: ', e);
             error("请求失败: " + e.responseText);
         }
@@ -227,8 +237,6 @@ function share(url) {
     $('#qrcode').empty();
     $('#qrcode').qrcode({
         text: url,
-        width: 128,
-        height: 128,
         colorDark: "#000000",
         colorLight: "#ffffff"
     });

@@ -17,21 +17,19 @@
 <head>
     <meta charset="utf-8" />
     <meta name="author" content="TES286" />
-    <link rel="shortcut icon" type="image/x-icon"
-        href="https://share.xn--4gq.cn.eu.org/EcgamA_FLhBBuHKY0IXhV2wBEfcq4hsKbr62o_8_B2agTA" />
+    <link rel="shortcut icon" type="image/x-icon" href="https://share.xn--4gq.cn.eu.org/EcgamA_FLhBBuHKY0IXhV2wBEfcq4hsKbr62o_8_B2agTA" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Online Onedrive Share Viewer can give you a download link for anything that share from Onedrive(Personal Edition), You an use the link to do any, like download it on the enviroment without UI" />
+    <meta name="description" content="Online Onedrive Share Viewer can give you a download link for anything that share from Onedrive(Personal Edition), You an use the link to do any, like download it on the enviroment without UI" />
     <title>Online Onedrive Share Viewer</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" media="all" />
-    <link rel="stylesheet" href="https://files.tes286.site/css/iconfront.folderopen-fill-file-fill.css"
-        media="asyncload" />
+    <link rel="stylesheet" href="https://files.tes286.site/css/iconfront.folderopen-fill-file-fill.css" media="asyncload" />
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery.qrcode@1.0.3" async="async"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" async="async"></script>
     <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8" async="async"></script>
     <script src="https://hm.baidu.com/hm.js?a763a746dfb5a5a8a830a184931a2e8f" async="async"></script>
-    <script src="shareView.js" async="async"></script>
+    <script src="https://www.googletagmanager.com/gtag/js?id=G-P0D0K5QM78" async="async"></script>
+    <script data-cfasync="false" src="shareView.js"></script>
 </head>
 
 <body onload="javascript:main();">
@@ -73,22 +71,17 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             分享链接
-                            <button type="button" class="btn btn-primary btn-xs" data-toggle="collapse"
-                                data-target="#title-body" style="float: right;">
+                            <button type="button" class="btn btn-primary btn-xs" data-toggle="collapse" data-target="#title-body" style="float: right;">
                                 折叠/显示
                             </button>
                         </h3>
                     </div>
                     <div class="panel-body collapse in" id="title-body">
-                        链接:<input id="ShareLink" type="url" height="500px" class="form-control"
-                            placeholder="https://1drv.ms/x/s!xxxxxxx..." /><br />
-                        路径:(可选)<input id='Path' type="text" value="/" height="500px" class="form-control"
-                            placeholder="/" /><br />
+                        链接:<input id="ShareLink" type="url" height="500px" class="form-control" placeholder="https://1drv.ms/x/s!xxxxxxx..." /><br /> 路径:(可选)
+                        <input id='Path' type="text" value="/" height="500px" class="form-control" placeholder="/" /><br />
                         <button id="Submit" class="btn btn-primary" onclick="javascript:start()">Submit</button>
-                        <button id="clear" class="btn btn-primary"
-                            onclick="javascript:$('#ShareLink').val('')">Clear</button>
-                        <button id="shareButton" class="btn btn-primary"
-                            onclick="javascript:share(location.href)">Share</button>
+                        <button id="clear" class="btn btn-primary" onclick="javascript:$('#ShareLink').val('')">Clear</button>
+                        <button id="shareButton" class="btn btn-primary" onclick="javascript:share(location.href)">Share</button>
                         <button class="btn btn-primary" onclick="javascript:$('#donate').show()">Donate</button>
                         <div id="test" style="display: none;">
                             <button class="btn btn-primary" onclick="javascript:location.reload()">Reload</button>
@@ -128,8 +121,7 @@
                     <div class="panel-body">
                         <div id='qrcode'></div>
                         <input id="link" class="form-control" />
-                        <button class="btn btn-primary btn-xs" data-clipboard-target="#link"
-                            data-clipboard-action="copy" id="copy">复制</button>
+                        <button class="btn btn-primary btn-xs" data-clipboard-target="#link" data-clipboard-action="copy" id="copy">复制</button>
                         <button class="btn btn-primary btn-xs" onclick="javascript:$('#share').hide()">关闭</button>
                     </div>
                 </div>
@@ -169,8 +161,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             数据
-                            <button type="button" class="btn btn-primary btn-xs" data-toggle="collapse"
-                                data-target="#ShareLinkList" style="float: right;">
+                            <button type="button" class="btn btn-primary btn-xs" data-toggle="collapse" data-target="#ShareLinkList" style="float: right;">
                                 折叠/显示
                             </button>
                         </h3>
@@ -178,8 +169,7 @@
                     <div class="panel-body">
                         <div id="ShareLinkList" class="collapse in table-responsive">
                             <!-- 文件列表 -->
-                            <table
-                                class="table table-striped table-hover table-condensed">
+                            <table class="table table-striped table-hover table-condensed">
                                 <thead>
                                     <tr>
                                         <th></th>
