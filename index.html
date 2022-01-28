@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!----License---------------------------------------------------------------------
---  TES286 Onedrive Online Panel                                                --
+--  TES286 Drive Panel                                                          --
 --  Copyright (C) 2016-2022  TES286                                             --
 --  This program is free software: you can redistribute it and/or modify        --
 --  it under the terms of the GNU General Public License as published by        --
@@ -18,15 +18,13 @@
     <meta charset="utf-8" />
     <meta name="author" content="TES286" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="TES286 Onedrive Online Panel" />
-    <title>TES286 Onedrive Online Panel</title>
+    <meta name="description" content="TES286 Drive Panel" />
+    <title>TES286 Drive Panel</title>
     <link rel="shortcut icon" type="image/x-icon" href="https://share.xn--4gq.cn.eu.org/EcgamA_FLhBBuHKY0IXhV2wBEfcq4hsKbr62o_8_B2agTA" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" media="all" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" media="async" />
     <link rel="stylesheet" href="index.css" media="all" />
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0"></script>
-    <!--<script src="https://cdn.jsdelivr.net/npm/jquery.qrcode@1.0.3" async="async"></script>
-    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8" async="async"></script>-->
+    <script data-cfasync="false" src="https://cdn.jsdelivr.net/npm/jquery@3.6.0"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" async="async"></script>
     <script src="https://cdn.jsdelivr.net/npm/node-forge@1.2.1/dist/forge.min.js" async="async"></script>
     <script src="https://hm.baidu.com/hm.js?a763a746dfb5a5a8a830a184931a2e8f" async="async"></script>
@@ -44,16 +42,15 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="https://onedrivepanel.tes286.top/">TES286 Onedrive Panel</a>
+                <a class="navbar-brand" href="https://drivepanel.tes286.top/">TES286 Drive Panel</a>
             </div>
             <div class="collapse navbar-collapse" id="headers-navbar">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="https://onedrivepanel.tes286.top/">Panel</a></li>
-                    <li><a href="https://onedrivepanel.tes286.top/shareView.html">Share View(Personal
+                    <li class="active"><a href="https://drivepanel.tes286.top/">Panel</a></li>
+                    <li><a href="https://drivepanel.tes286.top/shareView.html">Share View(Personal
                             Only)</a></li>
-                    <li class="navbar-right">
-                        <p class="navbar-text">Onedrive为Microsoft产品,与本站无关,最终仍使用Microsoft的api</p>
-                    </li>
+                    <li><a href="https://drivepanel.tes286.top/License.html">License</a></li>
+                    <p class="navbar-text">Onedrive为Microsoft产品,与本站无关,最终仍使用Microsoft的api获取内容</p>
                 </ul>
             </div>
         </div>
@@ -90,8 +87,8 @@
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a id="new-folder">文件夹</a></li>
-                    <li><a id="new-file">文件</a></li>
+                    <li><a id="new-folder" onclick="javascript:event_new_folder()">文件夹</a></li>
+                    <li><a id="new-file" onclick="javascript:event_new_file()">文件</a></li>
                 </ul>
                 <!-- 默认情况 show-defult -->
                 <!-- ( 上传 ) -->
@@ -99,14 +96,14 @@
                 <!-- ( 共享 复制链接 下载 删除 重命名 移动到 复制到 ) -->
                 <!-- 多选     show-mutil -->
                 <!-- ( 下载 删除 移动到 复制到 ) -->
-                <button type="button" class="btn btn-default show-default" id="upload">上传</button>
-                <button type="button" class="btn btn-default show-alone" id="share">共享</button>
-                <button type="button" class="btn btn-default show-alone" id="copy-link">复制链接</button>
-                <button type="button" class="btn btn-default show-alone show-mutil" id="download">下载</button>
-                <button type="button" class="btn btn-default show-alone show-mutil" id="delete">删除</button>
-                <button type="button" class="btn btn-default show-alone" id="rename">重命名</button>
-                <button type="button" class="btn btn-default show-alone show-mutil" id="move">移动到</button>
-                <button type="button" class="btn btn-default show-alone show-mutil" id="copy">复制到</button>
+                <button type="button" class="btn btn-default show-default" id="upload" onclick="javascript:event_upload()">上传</button>
+                <button type="button" class="btn btn-default show-alone" id="share" onclick="javascript:event_share()">共享</button>
+                <button type="button" class="btn btn-default show-alone" id="copy-link" onclick="javascript:event_copy_link()">复制链接</button>
+                <button type="button" class="btn btn-default show-alone show-mutil" id="download" onclick="javascript:event_download()">下载</button>
+                <button type="button" class="btn btn-default show-alone show-mutil" id="delete" onclick="javascript:event_delete()">删除</button>
+                <button type="button" class="btn btn-default show-alone" id="rename" onclick="javascript:event_rename()">重命名</button>
+                <button type="button" class="btn btn-default show-alone show-mutil" id="move" onclick="javascript:event_move()">移动到</button>
+                <button type="button" class="btn btn-default show-alone show-mutil" id="copy" onclick="javascript:event_copy()">复制到</button>
             </div>
             <!-- 文件列表 -->
             <div id="file-list" class="collapse in table-responsive">

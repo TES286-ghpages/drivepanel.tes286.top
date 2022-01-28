@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!----License---------------------------------------------------------------------
---  TES286 Onedrive Online Panel                                                --
+--  TES286 Drive Panel                                                          --
 --  Copyright (C) 2016-2022  TES286                                             --
 --  This program is free software: you can redistribute it and/or modify        --
 --  it under the terms of the GNU General Public License as published by        --
@@ -19,11 +19,11 @@
     <meta name="author" content="TES286" />
     <link rel="shortcut icon" type="image/x-icon" href="https://share.xn--4gq.cn.eu.org/EcgamA_FLhBBuHKY0IXhV2wBEfcq4hsKbr62o_8_B2agTA" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Online Onedrive Share Viewer can give you a download link for anything that share from Onedrive(Personal Edition), You an use the link to do any, like download it on the enviroment without UI" />
-    <title>Online Onedrive Share Viewer</title>
+    <meta name="description" content="Drive Share Viewer" />
+    <title>Share Viewer | TES286 Drive Panel</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" media="all" />
     <link rel="stylesheet" href="https://files.tes286.site/css/iconfront.folderopen-fill-file-fill.css" media="asyncload" />
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0"></script>
+    <script data-cfasync="false" src="https://cdn.jsdelivr.net/npm/jquery@3.6.0"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery.qrcode@1.0.3" async="async"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" async="async"></script>
     <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8" async="async"></script>
@@ -43,16 +43,15 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="https://onedrivepanel.tes286.top/">TES286 Onedrive Panel</a>
+                <a class="navbar-brand" href="https://drivepanel.tes286.top/">TES286 Drive Panel</a>
             </div>
             <div class="collapse navbar-collapse" id="headers-navbar">
                 <ul class="nav navbar-nav">
-                    <li><a href="https://onedrivepanel.tes286.top/">Panel</a></li>
-                    <li class="active"><a href="https://onedrivepanel.tes286.top/shareView.html">Share View(Personal
+                    <li><a href="https://drivepanel.tes286.top/">Panel</a></li>
+                    <li class="active"><a href="https://drivepanel.tes286.top/shareView.html">Share View(Personal
                             Only)</a></li>
-                    <li class="navbar-right">
-                        <p class="navbar-text">Onedrive为Microsoft产品,与本站无关,最终仍使用Microsoft的api</p>
-                    </li>
+                    <li><a href="https://drivepanel.tes286.top/License.html">License</a></li>
+                    <p class="navbar-text">drive为Microsoft产品,与本站无关,最终仍使用Microsoft的api获取内容</p>
                 </ul>
             </div>
         </div>
@@ -77,8 +76,8 @@
                         </h3>
                     </div>
                     <div class="panel-body collapse in" id="title-body">
-                        链接:<input id="ShareLink" type="url" height="500px" class="form-control" placeholder="https://1drv.ms/x/s!xxxxxxx..." /><br /> 路径:(可选)
-                        <input id='Path' type="text" value="/" height="500px" class="form-control" placeholder="/" /><br />
+                        链接:<input id="ShareLink" type="url" class="form-control" placeholder="https://1drv.ms/x/s!xxxxxxx..." /><br /> 路径:(可选)
+                        <input id='Path' type="text" value="/" class="form-control" placeholder="/" /><br />
                         <button id="Submit" class="btn btn-primary" onclick="javascript:start()">Submit</button>
                         <button id="clear" class="btn btn-primary" onclick="javascript:$('#ShareLink').val('')">Clear</button>
                         <button id="shareButton" class="btn btn-primary" onclick="javascript:share(location.href)">Share</button>

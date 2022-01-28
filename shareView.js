@@ -1,21 +1,22 @@
-/*****License*******************************************************************
-**  TES286 Onedrive Online Panel                                              **
-**  Copyright (C) 2016-2022  TES286                                           **
-**  This program is free software: you can redistribute it and/or modify      **
-**  it under the terms of the GNU General Public License as published by      **
-**  the Free Software Foundation, either version 3 of the License, or         **
-**  (at your option) any later version.                                       **
-**                                                                            **
-**  This program is distributed in the hope that it will be useful,           **
-**  but WITHOUT ANY WARRANTY; without even the implied warranty of            **
-**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             **
-**  GNU General Public License for more details.                              **
-********************************************************************************/
+/*****License*********************************************************************
+ **  TES286 Drive Panel                                                         **
+ **  Copyright (C) 2016-2022  TES286                                            **
+ **  This program is free software: you can redistribute it and/or modify       **
+ **  it under the terms of the GNU General Public License as published by       **
+ **  the Free Software Foundation, either version 3 of the License, or          **
+ **  (at your option) any later version.                                        **
+ **                                                                             **
+ **  This program is distributed in the hope that it will be useful,            **
+ **  but WITHOUT ANY WARRANTY; without even the implied warranty of             **
+ **  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the              **
+ **  GNU General Public License for more details.                               **
+ ********************************************************************************/
 
 var _hmt = _hmt || [];
 var DL_ROOT = "https://1drv.tes286.top/";
 
 window.dataLayer = window.dataLayer || [];
+
 function gtag() { dataLayer.push(arguments); }
 window.gtag = gtag;
 gtag('js', new Date());
@@ -47,6 +48,7 @@ function load_date() {
         }
     }
 }
+
 function main() {
     load_date();
     if ($("#ShareLink").val() != "") {
@@ -57,10 +59,10 @@ function main() {
     }
     window.paypalAlreadySetup = false;
     var clipboard = new ClipboardJS('#copy');
-    clipboard.on('success', function (e) {
+    clipboard.on('success', function(e) {
         console.log('Copy', e);
     });
-    clipboard.on('error', function (e) {
+    clipboard.on('error', function(e) {
         console.log('Copy Error', e);
     });
     show_wechat();
@@ -72,9 +74,11 @@ function main() {
         }
     }
 }
+
 function build_dl_url(token, id) {
     return DL_ROOT + "u/s!" + token + "/" + id;
 }
+
 function start() {
     // 设置hash
     hash = "url=" + encodeURIComponent($("#ShareLink").val()) + "&path=" + encodeURIComponent($("#Path").val());
@@ -127,7 +131,7 @@ function start() {
     $.ajax({
         url: api,
         type: "GET",
-        success: function (data) {
+        success: function(data) {
             // 检查是否成功
             if (data.error) {
                 console.error(data.error.message);
@@ -168,7 +172,7 @@ function start() {
             $("#Error").empty();
             $("#ErrorZone").hide();
         },
-        error: function (e) {
+        error: function(e) {
             h
             gtag('event', 'error', { error: "ajax error: " + e.responseText });
             console.error('Request failed: ', e);
@@ -177,6 +181,7 @@ function start() {
     });
     update_path_title()
 }
+
 function test() {
     window.test_flag = true;
     $("#ShareLink").val("https://1drv.ms/u/s!Anf3w9LYLCm3aq7TqzEUPdHXQW4?e=KTemKq");
@@ -187,6 +192,7 @@ function test() {
         start();
     }
 }
+
 function update(path) {
     var _path = $("#Path").val();
     if (_path == "") {
@@ -196,6 +202,7 @@ function update(path) {
     }
     start();
 }
+
 function update_path_title() {
     var _path = $("#Path").val();
     p = _path.split("/");
@@ -208,11 +215,13 @@ function update_path_title() {
         $("#PathTitle").append('<li><a onclick="javascript:cd(\'/' + join(p, '/', true, i + 1) + '\')">' + p[i] + "</li>");
     }
 }
+
 function error(msg) {
     $("#Error").empty();
     $("#Error").append(msg);
     $("#ErrorZone").show();
 }
+
 function join(date, spliter, skip_empty, n) {
     if (skip_empty == undefined) {
         skip_empty = true;
@@ -232,6 +241,7 @@ function join(date, spliter, skip_empty, n) {
     }
     return result;
 }
+
 function share(url) {
     $("#link").val(url);
     $('#qrcode').empty();
@@ -242,10 +252,12 @@ function share(url) {
     });
     $("#share").show();
 }
+
 function cd(path) {
     $("#Path").val(path);
     start();
 }
+
 function show_wechat() {
     $("#donate-alipay").hide();
     $('#donate-paypal').hide();
@@ -261,6 +273,7 @@ function show_wechat() {
         text: "wxp://f2f00gd_B-CYN4Q_2i4W2KcwUPZTA8LZHn0TButK77N3hAQ"
     });
 }
+
 function show_alipay() {
     $("#donate-wechat").hide();
     $('#donate-paypal').hide();
