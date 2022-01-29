@@ -86,24 +86,25 @@
                     新建
                     <span class="caret"></span>
                 </button>
-                <ul class="dropdown-menu">
-                    <li><a id="new-folder" onclick="javascript:event_new_folder()">文件夹</a></li>
-                    <li><a id="new-file" onclick="javascript:event_new_file()">文件</a></li>
-                </ul>
+                <button type="button" class="btn btn-default" onclick="javascript:event_refresh()">刷新</button>
                 <!-- 默认情况 show-defult -->
                 <!-- ( 上传 ) -->
                 <!-- 单独选择 show-alone -->
                 <!-- ( 共享 复制链接 下载 删除 重命名 移动到 复制到 ) -->
                 <!-- 多选     show-mutil -->
                 <!-- ( 下载 删除 移动到 复制到 ) -->
-                <button type="button" class="btn btn-default show-default" id="upload" onclick="javascript:event_upload()">上传</button>
-                <button type="button" class="btn btn-default show-alone" id="share" onclick="javascript:event_share()">共享</button>
-                <button type="button" class="btn btn-default show-alone" id="copy-link" onclick="javascript:event_copy_link()">复制链接</button>
-                <button type="button" class="btn btn-default show-alone show-mutil" id="download" onclick="javascript:event_download()">下载</button>
-                <button type="button" class="btn btn-default show-alone show-mutil" id="delete" onclick="javascript:event_delete()">删除</button>
-                <button type="button" class="btn btn-default show-alone" id="rename" onclick="javascript:event_rename()">重命名</button>
-                <button type="button" class="btn btn-default show-alone show-mutil" id="move" onclick="javascript:event_move()">移动到</button>
-                <button type="button" class="btn btn-default show-alone show-mutil" id="copy" onclick="javascript:event_copy()">复制到</button>
+                <button type="button" class="btn btn-default show-default" onclick="javascript:event_upload()">上传</button>
+                <button type="button" class="btn btn-default show-default show-personal" onclick="javascript:event_offline_download()">离线下载</button>
+                <button type="button" class="btn btn-default show-alone" onclick="javascript:event_share()">共享</button>
+                <button type="button" class="btn btn-default show-alone" onclick="javascript:event_download()">下载</button>
+                <button type="button" class="btn btn-default show-alone show-mutil" onclick="javascript:event_delete()">删除</button>
+                <button type="button" class="btn btn-default show-alone" onclick="javascript:event_rename()">重命名</button>
+                <button type="button" class="btn btn-default show-alone show-mutil" onclick="javascript:event_move()">移动到</button>
+                <button type="button" class="btn btn-default show-alone show-mutil" onclick="javascript:event_copy()">复制到</button>
+                <ul class="dropdown-menu">
+                    <li><a id="new-folder" onclick="javascript:event_new_folder()">文件夹</a></li>
+                    <li><a id="new-file" onclick="javascript:event_new_file()">文件</a></li>
+                </ul>
             </div>
             <!-- 文件列表 -->
             <div id="file-list" class="collapse in table-responsive">
@@ -125,5 +126,49 @@
                 </table>
             </div>
         </div>
+        <!-- 说明(未登录可见) -->
+        <div class="row no-login">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">说明</h3>
+                    </div>
+                    <div class="panel-body">
+                        <h4 class="text-center text-primary">
+                            TES286 Drive Panel
+                        </h4>
+                        <a href="https://github.com/TES286/DrivePanel/issues"><img src="https://img.shields.io/github/issues/TES286/DrivePanel?style=flat-square"></a>
+                        <a href="https://github.com/TES286/DrivePanel/network"><img src="https://img.shields.io/github/forks/TES286/DrivePanel?style=flat-square"></a>
+                        <a href="https://github.com/TES286/DrivePanel/stargazers"><img src="https://img.shields.io/github/stars/TES286/DrivePanel?style=flat-square"></a>
+                        <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/TES286/DrivePanel?style=flat-square">
+                        <a href="https://drivepanel.tes286.top/License.html"><img src="https://img.shields.io/badge/License-GPLv3-blue?style=flat-square" /></a>
+
+                        <p>
+                            本项目是一个用于查看OneDrive文件的面板,可以查看文件夹内容,并可以进行文件的上传,下载,删除,重命名,移动,复制等操作.
+                        </p>
+                        <p>
+                            本项目使用的是OneDrive的api,所以需要使用OneDrive的账号登录,并且需要使用OneDrive的api权限.
+                        </p>
+                        <p>
+                            本项目可以有效解决官方网站无法打开的问题,并且还扩展了部分功能.
+                        </p>
+                        <p>
+                            项目开源,可以在 <a href="https://github.com/TES286/DrivePanel">https://github.com/TES286/DrivePanel</a> 上找到.
+                        </p>
+                        <p>
+                            如果有什么问题,可以在 <a href="https://github.com/TES286/DrivePanel/issues"> 此处 </a> 提交, 或者发送邮件到 <a href="mailto:tes286@tes286.top">tes286@tes286.top</a>
+                        </p>
+                        <p>
+                            如果你有什么好的想法, 欢迎Pull Request.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 日志区 -->
+    <!-- 样式: alert, 右上角浮动, 默认隐藏 -->
+    <div class="log-group" id="log-group">
+        <div id="log-count" style="display: none;" data-log-count="0"></div>
     </div>
 </body>

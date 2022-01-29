@@ -12,7 +12,7 @@
  **  GNU General Public License for more details.                               **
  ********************************************************************************/
 
-// 依赖 jQuery=3.6.0, bootstrap=3.4.1, jquery.qrcode=1.0.3 clipboard=2.0.8, forge=1.2.1
+// 依赖 jQuery=3.6.0, bootstrap=3.4.1, forge=1.2.1
 
 // 常量
 const CLIENT_ID = 'f64e58d4-5604-49e6-82f3-1c0c30f6ee4c';
@@ -27,22 +27,43 @@ const REDIRECT_URL = location.origin + '/login.msad.html';
     function info(msg) {
         gtag('event', 'log-info', { msg: msg });
         console.log(msg);
-        $('#log').text(msg);
-        $('#log').attr('class', 'log log-info');
+        var count = string2int(document.getElementById('log-count').dataset.logCount);
+        /* Example:
+        <div class="log alert alert-info" role="alert" id="log-1">
+            TES286
+            <button class="log-btn-close" data-id="1" onclick="event_close_log(this)"></button>
+        </div>
+        */
+        $('#log-group').append('<div id="log-' + (count + 1) + '"></div>');
+        $('#log-' + (count + 1)).attr('class', 'log alert alert-info')
+            .attr('role', 'alert')
+        $('#log-' + (count + 1)).text(msg);
+        $('#log-' + (count + 1)).append('<button class="log-btn-close" data-id="' + (count + 1) + '" onclick="event_close_log(this)"></button>');
+        document.getElementById('log-count').dataset.logCount = (count + 1).toString();
     }
 
     function error(msg) {
         gtag('event', 'log-error', { msg: msg });
         console.error(msg);
-        $('#log').text(msg);
-        $('#log').attr('class', 'log log-error');
+        var count = string2int(document.getElementById('log-count').dataset.logCount);
+        $('#log-group').append('<div id="log-' + (count + 1) + '"></div>');
+        $('#log-' + (count + 1)).attr('class', 'log alert alert-danger')
+            .attr('role', 'alert')
+        $('#log-' + (count + 1)).text(msg);
+        $('#log-' + (count + 1)).append('<button class="log-btn-close" data-id="' + (count + 1) + '" onclick="event_close_log(this)"></button>');
+        document.getElementById('log-count').dataset.logCount = (count + 1).toString();
     }
 
     function warn(msg) {
         gtag('event', 'log-warn', { msg: msg });
         console.warn(msg);
-        $('#log').text(msg);
-        $('#log').attr('class', 'log log-warn');
+        var count = string2int(document.getElementById('log-count').dataset.logCount);
+        $('#log-group').append('<div id="log-' + (count + 1) + '"></div>');
+        $('#log-' + (count + 1)).attr('class', 'log alert alert-warning')
+            .attr('role', 'alert')
+        $('#log-' + (count + 1)).text(msg);
+        $('#log-' + (count + 1)).append('<button class="log-btn-close" data-id="' + (count + 1) + '" onclick="event_close_log(this)"></button>');
+        document.getElementById('log-count').dataset.logCount = (count + 1).toString();
     }
     window.info = info;
     window.error = error;
@@ -148,7 +169,14 @@ const REDIRECT_URL = location.origin + '/login.msad.html';
 
     function parentPath(path) {
         var path_list = path.split('/');
-        return '/' + join(path_list, '/', true, path_list.length - 1);
+        var _path_list = join(path_list, '/', true, path_list.length - 1).split('/');
+        return '/' + join(_path_list, '/', true, _path_list.length - 1);
+    }
+
+    function fileName(path) {
+        var path_list = path.split('/');
+        var _path = join(path_list, '/', true);
+        return _path.split('/')[_path.split('/').length - 1];
     }
 
     function string2int(s) {
@@ -166,6 +194,7 @@ const REDIRECT_URL = location.origin + '/login.msad.html';
     window.PKCE = PKCE;
     window.loadAsyncCss = loadAsyncCss;
     window.parentPath = parentPath;
+    window.fileName = fileName;
     window.string2int = string2int;
 })();
 
@@ -227,6 +256,7 @@ const REDIRECT_URL = location.origin + '/login.msad.html';
         $.ajax({
             url: OAUTH_TOKEN_ENDPOINT,
             type: 'POST',
+            async: false,
             data: {
                 'client_id': CLIENT_ID,
                 'scope': SCOPES,
@@ -245,9 +275,11 @@ const REDIRECT_URL = location.origin + '/login.msad.html';
 
     function refreshTokenIfNeeded() {
         var refresh_token = localDBread('refresh_token');
-        var token_expire = string2int(localDBread('token_expire'));
-        var token_time = string2int(localDBread('token_time'));
+        var token_expire = localDBread('token_expire');
+        var token_time = localDBread('token_time');
         if (refresh_token && token_expire && token_time) {
+            token_expire = string2int(token_expire);
+            token_time = string2int(token_time);
             if (Date.now() > token_time + token_expire - 10 * 60) {
                 refreshApiToken(refresh_token);
             }
@@ -400,6 +432,7 @@ const REDIRECT_URL = location.origin + '/login.msad.html';
             // 大小
             $('#' + base64urlencode(id)).append('<td>' + size + '</td>');
         }
+        window.current_path = path;
     }
 
     function progress_check() {
@@ -431,6 +464,9 @@ const REDIRECT_URL = location.origin + '/login.msad.html';
         } else {
             var url = GRAPH_API_ENDPOINT + '/v1.0/me/drive/root:' + parent_path + ':/children';
         }
+        if (name.startsWith('/')) {
+            name = name.substring(1);
+        }
         $.ajax({
             url: url,
             type: 'POST',
@@ -438,18 +474,18 @@ const REDIRECT_URL = location.origin + '/login.msad.html';
             headers: {
                 'Authorization': 'Bearer ' + token
             },
-            data: {
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify({
                 '@microsoft.graph.conflictBehavior': 'fail',
                 'name': name,
-                'folder': {
-                    '': ''
-                }
-            },
+                'folder': {}
+            }),
             success: function(data) {
                 getPath(parent_path);
             },
             error: function(data) {
-                error(data);
+                error(JSON.stringify(data));
             }
         });
     }
@@ -473,11 +509,111 @@ const REDIRECT_URL = location.origin + '/login.msad.html';
             }
         });
     }
+
+    function getFileByID(id) {
+        file = {};
+        $.ajax({
+            url: GRAPH_API_ENDPOINT + '/v1.0/me/drive/items/' + id,
+            type: 'GET',
+            async: false,
+            headers: {
+                'Authorization': 'Bearer ' + localDBread('token')
+            },
+            success: function(data) {
+                file = data;
+            },
+            error: function(data) {
+                error(JSON.stringify(data));
+            }
+        });
+        return file;
+    }
+
+    function deleteFileByID(id) {
+        var token = localDBread('token');
+        $.ajax({
+            url: GRAPH_API_ENDPOINT + '/v1.0/me/drive/items/' + id,
+            type: 'DELETE',
+            async: false,
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
+            success: function(data) {
+                void(data);
+            },
+            error: function(data) {
+                error(JSON.stringify(data));
+            }
+        });
+    }
+
+    function shareFileByID(id, type, scope, password) {
+        var token = localDBread('token');
+        var url = GRAPH_API_ENDPOINT + '/v1.0/me/drive/items/' + id + '/createLink';
+        type = type || 'view';
+        var data = { type: type };
+        if (scope) {
+            data.scope = scope;
+        }
+        if (password) {
+            data.password = password;
+        }
+        var url = '';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            async: false,
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(data),
+            success: function(data) {
+                url = data.link.webUrl;
+            },
+            error: function(data) {
+                error(JSON.stringify(data));
+                url = undefined;
+            }
+        });
+        return url;
+    }
+
+    function getParentID(path) {
+        var token = localDBread('token');
+        var id = '';
+        if (!path || path == '/') {
+            var url = GRAPH_API_ENDPOINT + '/v1.0/me/drive/root';
+        } else {
+            var url = GRAPH_API_ENDPOINT + '/v1.0/me/drive/root:' + path;
+        }
+        $.ajax({
+            url: url,
+            type: 'GET',
+            async: false,
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
+            success: function(data) {
+                id = data.id;
+            },
+            error: function(data) {
+                error(data.responseText);
+            }
+        });
+        return id;
+    }
+
     window.getFileList = getFileList;
     window.getPath = getPath;
     window.progress_check = progress_check;
     window.create_new_folder = create_new_folder;
     window.create_new_file = create_new_file;
+    window.getFileByID = getFileByID;
+    window.deleteFileByID = deleteFileByID;
+    window.shareFileByID = shareFileByID;
+    window.getParentID = getParentID;
 })();
 
 // 事件监听函数
@@ -509,16 +645,21 @@ const REDIRECT_URL = location.origin + '/login.msad.html';
             location.href = localDBread('last_url');
             return;
         }
+        refreshTokenIfNeeded();
         if (checkIfLogin()) {
             applyStyleToTagByClass('display', 'none', 'no-login');
             applyStyleToTagByClass('display', 'block', 'had-login');
-            refreshTokenIfNeeded();
             $('#username').text(getUserName());
             getPath('/');
         } else {
             applyStyleToTagByClass('display', 'block', 'no-login');
             applyStyleToTagByClass('display', 'none', 'had-login');
         }
+    }
+
+    function event_close_log(e) {
+        gtag('event', 'close_log');
+        document.getElementById("log-" + e.dataset.id).style.display = "none";
     }
 
     function event_check(e) {
@@ -581,6 +722,82 @@ const REDIRECT_URL = location.origin + '/login.msad.html';
         }
     }
 
+    function event_download() {
+        var file_list = window.checked_file_list || [];
+        var file_id = base64urldecode(file_list[0]);
+        var file = getFileByID(file_id)
+        window.open(file['@microsoft.graph.downloadUrl']);
+    }
+
+    function event_delete() {
+        var file_list = window.checked_file_list || [];
+        for (var i = 0; i < file_list.length; i++) {
+            var file_id = base64urldecode(file_list[i]);
+            deleteFileByID(file_id);
+        }
+        if (window.current_path) {
+            getPath(window.current_path);
+        } else {
+            getPath('/');
+        }
+        window.checked_file_list = [];
+        progress_check();
+    }
+
+    function event_share() {
+        var scope = prompt('请输入分享范围anonymous(任何拥有链接的人)/organization(组织内,组织版), 留空为组织默认: ');
+        var type = prompt('请输入权限[view(只读)]/edit(读写)/embed(嵌入,仅支持个人版账户): ');
+
+
+        var file_list = window.checked_file_list || [];
+        var file_id = base64urldecode(file_list[0]);
+        var url = shareFileByID(file_id, scope, type);
+        if (url) {
+            info('分享链接: ' + url);
+        }
+    }
+
+    function event_offline_download() {
+        var token = localDBread('token');
+        var url = prompt('请输入下载地址: ');
+        var name = prompt('请输入文件名: ');
+        if (!name.startsWith('/')) {
+            name = '/' + name;
+        }
+        if (url && name) {
+            var parent_id = getParentID(parentPath(name));
+            if (!parent_id) {
+                error('找不到父目录, 请检查文件名中路径是否存在');
+                return;
+            }
+            var xhr = $.ajax({
+                url: GRAPH_API_ENDPOINT + '/v1.0/me/drive/items/' + parent_id + '/children',
+                type: 'POST',
+                async: false,
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json',
+                    "Prefer": "respond-async"
+                },
+                data: JSON.stringify({
+                    '@microsoft.graph.sourceUrl': url,
+                    'name': fileName(name),
+                    'file': {}
+                })
+            });
+            if (xhr.status == 202) {
+                info('下载任务已提交, 监控链接: ' + xhr.getResponseHeader('Location'));
+            } else {
+                error('下载任务提交失败 ' + xhr.responseText);
+            }
+        }
+    }
+
+    function event_refresh() {
+        var path = window.current_path || '/';
+        getPath(path);
+    }
+
     function applyEventsListeners() {
         addListener('click', '#login-button', event_login_button);
         addListener('click', '#logout-button', event_logout_button);
@@ -589,10 +806,16 @@ const REDIRECT_URL = location.origin + '/login.msad.html';
     window.event_login_button = event_login_button;
     window.event_logout_button = event_logout_button;
     window.event_onload = event_onload;
+    window.event_close_log = event_close_log;
     window.event_check = event_check;
     window.event_check_all = event_check_all;
     window.event_new_file = event_new_file;
     window.event_new_folder = event_new_folder;
+    window.event_download = event_download;
+    window.event_delete = event_delete;
+    window.event_share = event_share;
+    window.event_offline_download = event_offline_download;
+    window.event_refresh = event_refresh;
     window.applyEventsListeners = applyEventsListeners;
 })();
 

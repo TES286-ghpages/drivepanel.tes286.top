@@ -20,7 +20,7 @@ xhr1.onload = function() {
 xhr1.send();
 
 var xhr2 = new XMLHttpRequest();
-xhr2.open('GET', 'https://raw.githubusercontent.com/digitalbazaar/forge/v1.2.1/LICENSE', true);
+xhr2.open('GET', 'https://raw.fastgit.org/digitalbazaar/forge/v1.2.1/LICENSE', true);
 xhr2.onload = function() {
     document.querySelector("#license-forge").innerText = xhr2.responseText;
 }
