@@ -212,7 +212,8 @@ function update_path_title() {
         if (p[i] == "") {
             continue;
         }
-        $("#PathTitle").append('<li><a onclick="javascript:cd(\'/' + join(p, '/', true, i + 1) + '\')">' + p[i] + "</li>");
+        $("#PathTitle").append('<li><a onclick="javascript:cd(\'/' + join(p, '/', true, i + 1) + '\')" id="p-' + i + '"></li>');
+        $("#PathTitle").find("#p-" + i).text(p[i]);
     }
 }
 

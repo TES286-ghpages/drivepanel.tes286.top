@@ -93,3 +93,7 @@
 .log-btn-close::before {
     content: "x";
 }
+
+.file-item:hover {
+    cursor: pointer;
+}

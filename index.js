@@ -28,12 +28,6 @@ const REDIRECT_URL = location.origin + '/login.msad.html';
         gtag('event', 'log-info', { msg: msg });
         console.log(msg);
         var count = string2int(document.getElementById('log-count').dataset.logCount);
-        /* Example:
-        <div class="log alert alert-info" role="alert" id="log-1">
-            TES286
-            <button class="log-btn-close" data-id="1" onclick="event_close_log(this)"></button>
-        </div>
-        */
         $('#log-group').append('<div id="log-' + (count + 1) + '"></div>');
         $('#log-' + (count + 1)).attr('class', 'log alert alert-info')
             .attr('role', 'alert')
@@ -179,8 +173,27 @@ const REDIRECT_URL = location.origin + '/login.msad.html';
         return _path.split('/')[_path.split('/').length - 1];
     }
 
+    function exterName(path) {
+        var file_name = fileName(path);
+        var file_name_list = file_name.split('.');
+        var _file_name = join(file_name_list, '.', true);
+        var _file_list = _file_name.split('.');
+        return _file_list[_file_list.length - 1];
+    }
+
     function string2int(s) {
         return parseInt(s.replace(/[^0-9]/g, ''));
+    }
+
+    function updateBreadcrumb(path) {
+        var path_list = path.split('/');
+        var _path = join(path_list, '/', true);
+        $('#breadcrumb').empty();
+        $('#breadcrumb').append('<li onclick="javascript:event_bread_change(this)" data-path="/">(根目录)</li>');
+        for (var n = 0; n < path_list.length; n++) {
+            if (path_list[n] == '') continue;
+            $('#breadcrumb').append('<li onclick="javascript:event_bread_change(this)" data-path="' + join(path_list, '/', true, n + 1) + '">' + path_list[n] + '</li>');
+        }
     }
     window.byte2human = byte2human;
     window.applyStyleToTagByClass = applyStyleToTagByClass;
@@ -196,6 +209,7 @@ const REDIRECT_URL = location.origin + '/login.msad.html';
     window.parentPath = parentPath;
     window.fileName = fileName;
     window.string2int = string2int;
+    window.updateBreadcrumb = updateBreadcrumb;
 })();
 
 // localDB 相关函数
@@ -409,30 +423,32 @@ const REDIRECT_URL = location.origin + '/login.msad.html';
             return;
         }
         $('#FileTable').empty();
-        for (i = 0; i < file_list.length; i++) {
-            var name = file_list[i].name;
-            var type = file_list[i].type;
-            var id = file_list[i].id;
-            var size = file_list[i].size;
-            var user = file_list[i].user;
-            var time = file_list[i].time;
+        for (n = 0; n < file_list.length; n++) {
+            var name = file_list[n].name;
+            var type = file_list[n].type;
+            var id = file_list[n].id;
+            var size = file_list[n].size;
+            var user = file_list[n].user;
+            var time = file_list[n].time;
             $('#FileTable').append('<tr id="' + base64urlencode(id) + '"></tr>');
             // 选择框
             $('#' + base64urlencode(id)).append('<td><input type="checkbox" class="check" onclick="event_check(this)" data-file-id="' + base64urlencode(id) + '"></td>');
             // 图标
             if (type == 'file') {
-                $('#' + base64urlencode(id)).append('<td><i class="far fa-file"></i></td>');
+                $('#' + base64urlencode(id)).append('<td class="file-item" onclick="event_open_file(this)"><i class="far fa-file"></i></td>');
             } else {
-                $('#' + base64urlencode(id)).append('<td><i class="far fa-folder"></i></td>');
+                $('#' + base64urlencode(id)).append('<td class="file-item" onclick="event_open_file(this)"><i class="far fa-folder"></i></td>');
             }
             // 名称
-            $('#' + base64urlencode(id)).append('<td class="item" data-path="' + path + '/' + name + '" data-type="' + type + '">' + name + '</td>');
+            $('#' + base64urlencode(id)).append('<td class="file-item" onclick="event_open_file(this)" data-path="/' + join((path + '/' + name).split('/'), '/') + '" data-type="' + type + '">' + name + '</td>');
             // 修改者
-            $('#' + base64urlencode(id)).append('<td>' + user + '</td>');
+            $('#' + base64urlencode(id)).append('<td class="file-item" onclick="event_open_file(this)">' + user + '</td>');
             // 大小
-            $('#' + base64urlencode(id)).append('<td>' + size + '</td>');
+            $('#' + base64urlencode(id)).append('<td class="file-item" onclick="event_open_file(this)">' + size + '</td>');
         }
         window.current_path = path;
+        window.checked_file_list = [];
+        progress_check();
     }
 
     function progress_check() {
@@ -558,7 +574,7 @@ const REDIRECT_URL = location.origin + '/login.msad.html';
         if (password) {
             data.password = password;
         }
-        var url = '';
+        var share_url = '';
         $.ajax({
             url: url,
             type: 'POST',
@@ -570,14 +586,14 @@ const REDIRECT_URL = location.origin + '/login.msad.html';
             dataType: "json",
             data: JSON.stringify(data),
             success: function(data) {
-                url = data.link.webUrl;
+                share_url = data.link.webUrl;
             },
             error: function(data) {
                 error(JSON.stringify(data));
-                url = undefined;
+                share_url = undefined;
             }
         });
-        return url;
+        return share_url;
     }
 
     function getParentID(path) {
@@ -605,6 +621,77 @@ const REDIRECT_URL = location.origin + '/login.msad.html';
         return id;
     }
 
+    function renameFile(id, name) {
+        $.ajax({
+            url: GRAPH_API_ENDPOINT + '/v1.0/me/drive/items/' + id,
+            type: 'PATCH',
+            async: false,
+            headers: {
+                'Authorization': 'Bearer ' + localDBread('token'),
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify({
+                'name': name
+            }),
+            success: function(data) {
+                event_refresh();
+            },
+            error: function(data) {
+                error(data.responseText);
+            }
+        });
+    }
+
+    function copyTo(idFrom, idToParent) {
+        var token = localDBread('token');
+        var url = GRAPH_API_ENDPOINT + '/v1.0/me/drive/items/' + idFrom + '/copy';
+        var xhr = $.ajax({
+            url: url,
+            type: 'POST',
+            async: false,
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify({
+                'parentReference': {
+                    'id': idToParent
+                }
+            }),
+            error: function(data) {
+                error(data.responseText);
+            }
+        });
+        if (xhr.status.toString().substring(0, 1) == '2') {
+            info('复制任务已经提交, 监视链接 ' + xhr.getResponseHeader('Location'));
+        }
+    }
+
+    function moveTo(idFrom, idToParent) {
+        var token = localDBread('token');
+        var url = GRAPH_API_ENDPOINT + '/v1.0/me/drive/items/' + idFrom + '/move';
+        var xhr = $.ajax({
+            url: url,
+            type: 'POST',
+            async: false,
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify({
+                'parentReference': {
+                    'id': idToParent
+                }
+            }),
+            success: function(data) {
+                info('移动完成');
+            },
+            error: function(data) {
+                error(data.responseText);
+            }
+        });
+    }
+
     window.getFileList = getFileList;
     window.getPath = getPath;
     window.progress_check = progress_check;
@@ -614,6 +701,9 @@ const REDIRECT_URL = location.origin + '/login.msad.html';
     window.deleteFileByID = deleteFileByID;
     window.shareFileByID = shareFileByID;
     window.getParentID = getParentID;
+    window.renameFile = renameFile;
+    window.copyTo = copyTo;
+    window.moveFileTo = moveTo;
 })();
 
 // 事件监听函数
@@ -753,7 +843,8 @@ const REDIRECT_URL = location.origin + '/login.msad.html';
         var file_id = base64urldecode(file_list[0]);
         var url = shareFileByID(file_id, scope, type);
         if (url) {
-            info('分享链接: ' + url);
+            info('分享链接: ' + url + '\n\
+            本站分享链接: https://drivepanel.tes286.top/shareView#url=' + encodeURIComponent(url));
         }
     }
 
@@ -798,6 +889,138 @@ const REDIRECT_URL = location.origin + '/login.msad.html';
         getPath(path);
     }
 
+    function event_rename() {
+        var file_list = window.checked_file_list || [];
+        var file_id = base64urldecode(file_list[0]);
+        var file = getFileByID(file_id);
+        var name = prompt('请输入新的文件名: ');
+        if (name) {
+            renameFile(file_id, name);
+        }
+        window.checked_file_list = [];
+    }
+
+    function event_copy() {
+        var file_list = window.checked_file_list || [];
+        var file_id = base64urldecode(file_list[0]);
+        var name = prompt('请输入新的目录名: ');
+        if (!name.startsWith('/')) {
+            name = '/' + name;
+        }
+        var parent_id = getParentID(parentPath(name));
+        if (name) {
+            copyFile(file_id, parent_id);
+        }
+        window.checked_file_list = [];
+        progress_check();
+    }
+
+    function event_move() {
+        var file_list = window.checked_file_list || [];
+        var file_id = base64urldecode(file_list[0]);
+        var name = prompt('请输入新的目录名: ');
+        if (!name.startsWith('/')) {
+            name = '/' + name;
+        }
+        var parent_id = getParentID(parentPath(name));
+        if (name) {
+            moveFileTo(file_id, parent_id);
+        }
+        window.checked_file_list = [];
+        progress_check();
+    }
+
+    function event_open_file(e) {
+        var path = $(e).parent().find('td:nth-child(3)').data('path')
+        switch ($(e).parent().find('td:nth-child(2) > i').attr('class')) {
+            case 'far fa-folder':
+                var type = 'folder';
+                break;
+            case 'far fa-file':
+                var type = 'file';
+                break;
+            default:
+                var type = 'file';
+                break;
+        }
+        if (type == 'folder') {
+            getPath(path);
+            updateBreadcrumb(path);
+        } else {
+            // TODO: 此处保留为未来扩展
+            switch (fileExt(path)) {
+                case 'txt':
+                    var mode = 'text/plain';
+                    break;
+                case 'log':
+                    var mode = 'text/plain';
+                    break;
+                case 'md':
+                    var mode = 'text/x-markdown';
+                    break;
+                case 'html':
+                    var mode = 'text/html';
+                    break;
+                case 'png':
+                    var mode = 'image/png';
+                    break;
+                case 'jpg':
+                case 'jpeg':
+                    var mode = 'image/jpeg';
+                    break;
+                case 'gif':
+                    var mode = 'image/gif';
+                    break;
+                case 'webp':
+                    var mode = 'image/webp';
+                    break;
+                case 'mp4':
+                    var mode = 'video/mp4';
+                    break;
+                case 'avi':
+                    var mode = 'video/avi';
+                    break;
+                case 'mkv':
+                    var mode = 'video/mkv';
+                    break;
+                case 'mp3':
+                    var mode = 'audio/mp3';
+                    break;
+                case 'wav':
+                    var mode = 'audio/wav';
+                    break;
+                case 'flac':
+                    var mode = 'audio/flac';
+                    break;
+                case 'pdf':
+                    var mode = 'application/pdf';
+                    break;
+                case 'doc':
+                case 'docx':
+                    var mode = 'application/msword';
+                    break;
+                case 'xls':
+                case 'xlsx':
+                    var mode = 'application/vnd.ms-excel';
+                    break;
+                case 'ppt':
+                case 'pptx':
+                    var mode = 'application/vnd.ms-powerpoint';
+                    break;
+                default:
+                    var mode = 'octet-stream';
+                    break;
+            }
+            warn('暂不支持打开该文件, 请下载');
+        }
+    }
+
+    function event_bread_change(e) {
+        var path = $(e).data('path');
+        getPath(path);
+        updateBreadcrumb(path);
+    }
+
     function applyEventsListeners() {
         addListener('click', '#login-button', event_login_button);
         addListener('click', '#logout-button', event_logout_button);
@@ -816,6 +1039,11 @@ const REDIRECT_URL = location.origin + '/login.msad.html';
     window.event_share = event_share;
     window.event_offline_download = event_offline_download;
     window.event_refresh = event_refresh;
+    window.event_rename = event_rename;
+    window.event_copy = event_copy;
+    window.event_move = event_move;
+    window.event_open_file = event_open_file;
+    window.event_bread_change = event_bread_change;
     window.applyEventsListeners = applyEventsListeners;
 })();
 
